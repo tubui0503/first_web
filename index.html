@@ -1,235 +1,200 @@
 <!doctype html>
 <html lang="vi">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Em có yêu anh không?</title>
-  <style>
-    :root{
-      --bg:#f6efe8;
-      --card:#fffdf9;
-      --accent:#ff6b81;
-      --muted:#6b6b6b;
-      --paper-lines: rgba(0,0,0,0.03);
-    }
-    html,body{height:100%;margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Arial;}
-    body{
-      display:flex;align-items:center;justify-content:center;
-      background:linear-gradient(180deg,#fbf7f3 0%, #f6efe8 100%);
-      padding:28px;
-    }
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Hello Le Ha Vy</title>
+<style>
+:root{--accent:#ff6b81;--accent2:#ff9aa6;--card:#fffdf9;--muted:#6b6b6b}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;font-family:Inter,system-ui,Segoe UI,Roboto,Arial}
+body{min-height:100vh;padding:28px;overflow-y:auto;background:radial-gradient(circle at 8% 18%,#ffe8ec 0,transparent 190px),radial-gradient(circle at 92% 78%,#ffe9e2 0,transparent 220px),linear-gradient(180deg,#fffaf6,#f7eee8);color:#333}
+body.modal-open{overflow:hidden}
 
-    /* Container chính */
-    .wrap{
-      width:100%;max-width:920px;background:var(--card);border-radius:14px;
-      box-shadow:0 18px 50px rgba(20,20,20,0.08);padding:28px;position:relative;
-      overflow:visible;box-sizing:border-box;
-    }
+/* Trang chính */
+.wrap{width:100%;max-width:920px;margin:0 auto;background:rgba(255,253,249,.97);border-radius:24px;box-shadow:0 20px 60px rgba(40,25,25,.10);padding:42px 32px 55px;position:relative;overflow:hidden}
+.wrap:before,.wrap:after{content:'♥';position:absolute;color:#ffc1c8;font-size:30px;opacity:.7;animation:float 4s ease-in-out infinite;pointer-events:none}
+.wrap:before{left:22px;top:120px}.wrap:after{right:25px;bottom:110px;animation-delay:1.4s}
+@keyframes float{50%{transform:translateY(-10px) rotate(8deg)}}
+.header{text-align:center;position:relative;z-index:2}
+h1{margin:0;color:#e85d69;font-family:Georgia,'Times New Roman',serif;font-size:clamp(30px,5vw,44px);line-height:1.2}
+.lead{margin:10px 0 24px;color:var(--muted);font-family:Georgia,'Times New Roman',serif;font-size:18px}
+.lead:after{content:' ♥';color:var(--accent)}
+.buttons{display:flex;justify-content:center;gap:14px;position:relative;z-index:5;margin-bottom:34px}
+button{border:0;cursor:pointer;font-weight:700;font-size:17px;padding:13px 30px;border-radius:999px;transition:.25s ease;outline:none}
+button:hover{transform:translateY(-2px)}
+.yes{background:linear-gradient(135deg,#ff6979,#ff8995);color:#fff;box-shadow:0 10px 25px rgba(255,105,121,.25)}
+.no{background:#fff;color:#59616a;box-shadow:0 8px 22px rgba(50,40,40,.08);border:1px solid #eee}
+.photo-area{width:min(700px,100%);margin:0 auto;padding:9px;background:#fff;border-radius:21px;box-shadow:0 15px 40px rgba(40,25,25,.11);position:relative}
+.photo-area:before{content:'♥';position:absolute;z-index:2;left:50%;top:-20px;transform:translateX(-50%);width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:#fff8f6;color:var(--accent);font-size:22px;box-shadow:0 5px 16px rgba(40,25,25,.10)}
+.photo-area img{display:block;width:100%;max-height:600px;object-fit:contain;border-radius:14px}
+.bottom{text-align:center;margin-top:42px;color:#b27d70;font:18px Georgia,serif}.bottom .heart{color:var(--accent);font-size:28px;margin-bottom:6px}.mini-envelope{width:230px;height:135px;margin:15px auto 0;border-radius:12px;background:linear-gradient(135deg,#ffe1e2,#ffd0d4);position:relative;box-shadow:0 10px 25px rgba(160,80,90,.13);overflow:hidden}.mini-envelope:before{content:'';position:absolute;left:0;top:0;border-left:115px solid transparent;border-right:115px solid transparent;border-top:75px solid #ffc3c9}.mini-envelope:after{content:'♥';position:absolute;left:50%;top:53%;transform:translate(-50%,-20%);font-size:40px;color:#ff6878}
 
-    /* Header */
-    .header-area{ text-align:center; margin-bottom:8px; transition:opacity 360ms, transform 360ms; }
-    h1{margin:0;color:var(--accent);font-size:28px}
-    p.lead{margin:6px 0 18px;color:var(--muted)}
+/* Màn hình hiệu ứng phong bì */
+.envelope-overlay{position:fixed;inset:0;background:rgba(255,248,244,.94);backdrop-filter:blur(5px);display:flex;align-items:center;justify-content:center;opacity:0;visibility:hidden;z-index:10000;transition:opacity .35s ease,visibility .35s ease}
+.envelope-overlay.active{opacity:1;visibility:visible}
+.envelope-stage{position:relative;width:360px;height:300px;display:flex;align-items:flex-end;justify-content:center}
+.envelope-shadow{position:absolute;bottom:25px;width:280px;height:28px;border-radius:50%;background:rgba(70,35,40,.14);filter:blur(10px);opacity:0;transform:scale(.7);transition:opacity .5s .1s,transform .6s .1s}
+.envelope{position:absolute;bottom:45px;width:300px;height:190px;filter:drop-shadow(0 18px 25px rgba(100,45,55,.18));transform:translateY(80px) scale(.75);opacity:0;transition:transform .65s cubic-bezier(.2,.9,.3,1),opacity .45s ease}
+.envelope-overlay.active .envelope{transform:translateY(0) scale(1);opacity:1}
+.envelope-overlay.active .envelope-shadow{opacity:1;transform:scale(1)}
+.env-back{position:absolute;inset:0;border-radius:12px;background:linear-gradient(145deg,#ffdfe1,#ffc9ce);overflow:hidden}
+.env-back:before{content:'';position:absolute;left:0;top:0;border-left:150px solid transparent;border-right:150px solid transparent;border-top:105px solid #ffbfc6;z-index:2}
+.env-front{position:absolute;left:0;right:0;bottom:0;height:125px;background:linear-gradient(160deg,#ffd3d6,#ffc5cb);clip-path:polygon(0 0,50% 65%,100% 0,100% 100%,0 100%);z-index:4}
+.env-flap{position:absolute;left:0;top:0;width:0;height:0;border-left:150px solid transparent;border-right:150px solid transparent;border-top:108px solid #ffabb5;transform-origin:50% 0;z-index:6;transition:transform .75s cubic-bezier(.2,.85,.25,1)}
+.envelope-overlay.open .env-flap{transform:rotateX(180deg)}
+.seal{position:absolute;left:50%;top:78px;transform:translateX(-50%);width:48px;height:48px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#ff9aa5,#e95367);color:white;display:flex;align-items:center;justify-content:center;font-size:22px;z-index:8;box-shadow:0 4px 10px rgba(150,50,65,.2);transition:opacity .3s,transform .35s}
+.envelope-overlay.open .seal{opacity:0;transform:translateX(-50%) scale(.5)}
+.paper{position:absolute;left:50%;bottom:38px;width:250px;height:185px;transform:translate(-50%,70px);background:#fffdf9;border-radius:8px;box-shadow:0 8px 18px rgba(60,30,30,.15);z-index:3;transition:transform 1s cubic-bezier(.18,.85,.25,1)}
+.paper:before{content:'♥';position:absolute;top:20px;left:50%;transform:translateX(-50%);font-size:25px;color:#ff7a89}.paper:after{content:'Một lá thư dành cho em';position:absolute;left:0;right:0;top:58px;text-align:center;color:#b47770;font:16px Georgia,serif}
+.envelope-overlay.open .paper{transform:translate(-50%,-85px)}
+.opening-text{position:absolute;bottom:-5px;left:0;right:0;text-align:center;color:#a67870;font:18px Georgia,serif;opacity:0;transform:translateY(10px);transition:opacity .4s .15s,transform .4s .15s}
+.envelope-overlay.active .opening-text{opacity:1;transform:none}.envelope-overlay.open .opening-text{opacity:0}
 
-    /* Nút */
-    .buttons{display:flex;gap:12px;justify-content:center;margin-top:8px;z-index:6;position:relative;transition:opacity 360ms, transform 360ms;}
-    button{
-      padding:12px 22px;border-radius:10px;border:0;font-weight:700;
-      cursor:pointer;font-size:16px;transition:transform 300ms cubic-bezier(.2,.9,.3,1),opacity 260ms,box-shadow 260ms;
-      will-change:transform,opacity;outline:none;background:#eee;color:#222;
-    }
-    .yes{background:var(--accent);color:#fff;box-shadow:0 8px 26px rgba(255,107,129,0.18)}
-    .no{background:#f0f0f0;color:#333}
+/* Thư sau khi lấy ra */
+.letter-modal{position:fixed;inset:0;background:rgba(50,30,30,.35);backdrop-filter:blur(7px);display:flex;align-items:center;justify-content:center;padding:18px;opacity:0;visibility:hidden;z-index:11000;transition:opacity .4s,visibility .4s}
+.letter-modal.show{opacity:1;visibility:visible}
+.letter-card{width:min(900px,100%);height:min(760px,100%);background:linear-gradient(180deg,#fffdf9,#fff9f5);border-radius:22px;box-shadow:0 30px 90px rgba(30,20,20,.25);padding:35px 40px;overflow:auto;transform:translateY(30px) scale(.97);transition:transform .45s ease}.letter-modal.show .letter-card{transform:none}
+.letter-card h2{margin:0 0 18px;color:var(--accent);font:700 29px Georgia,serif}.letter-card p{line-height:1.75;color:#333;font-size:17px}.letter-photo{display:block;width:min(430px,100%);max-height:330px;object-fit:contain;margin:22px auto;border-radius:15px;box-shadow:0 10px 30px rgba(40,25,25,.12)}
+.letter-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:20px}.close{background:#eee;color:#444;border-radius:10px;padding:10px 18px}.save{background:var(--accent);color:#fff;border-radius:10px;padding:10px 18px}
 
-    /* Letter card (mặc định trong layout) */
-    .letter{
-      margin-top:22px;position:relative;border-radius:10px;
-      background:
-        linear-gradient(180deg, rgba(255,255,255,0.98) 0%, rgba(255,255,255,0.96) 100%),
-        repeating-linear-gradient(180deg, var(--paper-lines) 0px, var(--paper-lines) 1px, transparent 1px, transparent 28px);
-      border:1px solid rgba(0,0,0,0.04);
-      padding:28px 28px 36px 28px;color:#222;
-      max-height:64vh;overflow:auto;box-shadow:inset 0 1px 0 rgba(255,255,255,0.6);
-      transition:transform 420ms ease,opacity 420ms ease;
-      opacity:0;transform:translateY(8px);z-index:3;will-change:transform,opacity;box-sizing:border-box;
-    }
-    .letter.show{opacity:1;transform:none}
-
-    /* Khi mở thư: dùng fixed và canh giữa để tránh lệch */
-    .letter.full{
-      position:fixed !important;
-      left:50% !important;
-      top:50% !important;
-      transform:translate(-50%,-50%) !important;
-      width: min(920px, calc(100% - 48px));
-      height: min(720px, calc(100% - 48px));
-      border-radius:12px;
-      padding:36px 40px;
-      overflow:auto;
-      box-shadow:0 30px 80px rgba(20,20,20,0.18);
-      background:linear-gradient(180deg,#fffdf9 0%, #fffaf6 100%);
-      z-index:9999;
-      transition:transform 420ms ease, opacity 420ms ease;
-    }
-
-    /* Trang trí: tem & dấu sáp */
-    .stamp, .wax {
-      transition:opacity 360ms ease, transform 360ms ease, visibility 360ms;
-      will-change:opacity,transform;
-      z-index:4; position:absolute;
-    }
-    .stamp{right:22px;top:18px;width:86px;height:86px;border-radius:8px;transform:rotate(-6deg);}
-    .wax{left:18px;bottom:18px;width:86px;height:86px;transform:rotate(8deg);}
-
-    /* Khi chuyển sang thư full: ẩn mượt các trang trí và header/buttons */
-    .wrap.to-letter .stamp,
-    .wrap.to-letter .wax,
-    .wrap.to-letter .background-decor {
-      opacity:0; transform:translateY(-12px) scale(0.98); visibility:hidden; pointer-events:none;
-    }
-    .wrap.to-letter .header-area,
-    .wrap.to-letter .buttons{
-      opacity:0; transform:translateY(-8px); pointer-events:none;
-    }
-
-    /* Tiêu đề thư và nội dung */
-    .letter h2{color:var(--accent);margin-top:0;font-size:20px}
-    .letter p{line-height:1.6;color:#222;margin:10px 0}
-
-    /* Footer */
-    footer{margin-top:18px;color:#999;font-size:13px;text-align:center}
-
-    /* Responsive */
-    @media (max-width:520px){
-      .stamp{display:none}
-      .wax{display:none}
-      .wrap{padding:18px}
-      .letter{padding:18px}
-      .letter.full{width:calc(100% - 32px);height:calc(100% - 32px)}
-    }
-  </style>
+@media(max-width:600px){body{padding:10px}.wrap{padding:34px 15px 45px;border-radius:20px}.buttons{gap:9px}.buttons button{padding:12px 23px;font-size:16px}.photo-area img{max-height:500px}.envelope-stage{transform:scale(.82)}.letter-card{padding:25px 20px}.letter-card h2{font-size:25px}.letter-card p{font-size:16px}}
+</style>
 </head>
 <body>
-  <div class="wrap" role="main" aria-labelledby="title">
-    <div class="header-area">
-      <h1 id="title">Em có yêu anh không?</h1>
-      <p class="lead">Ấn một nút để trả lời nhé</p>
-    </div>
 
-    <div class="buttons" id="btns" aria-hidden="false">
-      <button class="yes" id="btnYes" aria-controls="letter" aria-pressed="false">Có</button>
-      <button class="no" id="btnNo" aria-pressed="false">Không</button>
-    </div>
+<main class="wrap">
+  <section class="header">
+    <h1>Do you love me?</h1>
+    <p class="lead">Please choose</p>
+  </section>
 
-    <!-- Tem bưu điện (SVG inline) -->
-    <div class="stamp" aria-hidden="true">
-      <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="stamp">
-        <defs><linearGradient id="g1" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#ffdfe2"/><stop offset="1" stop-color="#ffd1d6"/></linearGradient></defs>
-        <rect x="6" y="6" width="88" height="88" rx="6" fill="url(#g1)" stroke="#f0b0b8" stroke-width="2"/>
-        <g transform="translate(18,18)" fill="#b33b4a">
-          <circle cx="16" cy="16" r="12" fill="#fff6f6"/>
-          <path d="M8 36c6-8 20-8 26 0" stroke="#b33b4a" stroke-width="3" fill="none" stroke-linecap="round"/>
-          <text x="40" y="60" font-size="10" fill="#b33b4a" font-family="sans-serif">LOVE</text>
-        </g>
-      </svg>
-    </div>
-
-    <!-- Dấu sáp (SVG inline) -->
-    <div class="wax" aria-hidden="true">
-      <svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="wax seal">
-        <defs><radialGradient id="waxGrad" cx="50%" cy="30%"><stop offset="0%" stop-color="#ff7b88"/><stop offset="100%" stop-color="#b33b4a"/></radialGradient></defs>
-        <g transform="translate(10,10)">
-          <path d="M50 0 C70 0 90 10 100 30 C110 50 100 70 80 80 C60 90 40 90 20 80 C0 70 -10 50 0 30 C10 10 30 0 50 0 Z"
-                fill="url(#waxGrad)" stroke="#8a2b36" stroke-width="2"/>
-          <text x="34" y="52" font-size="18" fill="#fff6f6" font-weight="700" font-family="serif">A</text>
-        </g>
-      </svg>
-    </div>
-
-    <!-- Thư -->
-    <div class="letter" id="letter" aria-live="polite" tabindex="-1">
-      <h2>Thư dành cho em</h2>
-      <p>Em yêu dấu,</p>
-
-      <p><strong>NỘI DUNG THƯ:</strong> Đây là chỗ để bạn dán nội dung thư thật. Thay toàn bộ đoạn này bằng lời nhắn của bạn. Bạn có thể dùng nhiều đoạn, chèn emoji hoặc ký tên ở cuối.</p>
-
-      <p>Anh luôn nghĩ về em và mong em hiểu tấm lòng anh. Mỗi khi nhớ em, anh lại viết vài dòng để gửi đến em qua trang này.</p>
-
-      <p style="margin-top:18px">— <em>Anh</em></p>
-
-      <div style="margin-top:18px;display:flex;gap:10px;align-items:center;flex-wrap:wrap">
-        <button id="closeLetter" style="padding:8px 12px;border-radius:8px;border:0;background:#eee;cursor:pointer">Đóng</button>
-        <button id="downloadNote" style="padding:8px 12px;border-radius:8px;border:0;background:var(--accent);color:#fff;cursor:pointer">Lưu lại</button>
-      </div>
-    </div>
+  <div class="buttons">
+    <button class="yes" id="btnYes">♡ Yes</button>
+    <button class="no" id="btnNo">♡ No</button>
   </div>
 
-  <script>
-    (function(){
-      const wrap = document.querySelector('.wrap');
-      const btnYes = document.getElementById('btnYes');
-      const btnNo = document.getElementById('btnNo');
-      const letter = document.getElementById('letter');
-      const closeLetter = document.getElementById('closeLetter');
-      const downloadNote = document.getElementById('downloadNote');
+  <div class="photo-area">
+    <img src="1.png" alt="Ảnh">
+  </div>
 
-      // Ẩn nút "Không" mượt (transform + opacity để tránh reflow)
-      btnNo.addEventListener('click', () => {
-        btnNo.style.transition = 'transform 260ms ease, opacity 260ms ease';
-        btnNo.style.transform = 'scale(0.6)';
-        btnNo.style.opacity = '0';
-        btnYes.classList.add('enlarge');
-        setTimeout(() => { btnNo.style.display = 'none'; }, 320);
-      });
+  <div class="bottom">
+    <div class="heart">♥</div>
+    Thank you for being here ♥
+    <div class="mini-envelope"></div>
+  </div>
+</main>
 
-      // Mở thư: hiện thư (opacity/transform) rồi chuyển sang chế độ full (fixed, centered)
-      btnYes.addEventListener('click', () => {
-        if (wrap.classList.contains('to-letter')) return;
+<!-- Hiệu ứng phong bao -->
+<div class="envelope-overlay" id="envelopeOverlay" aria-hidden="true">
+  <div class="envelope-stage">
+    <div class="envelope-shadow"></div>
+    <div class="envelope">
+      <div class="env-back"></div>
+      <div class="paper"></div>
+      <div class="env-front"></div>
+      <div class="env-flap"></div>
+      <div class="seal">♥</div>
+    </div>
+    <div class="opening-text">Một chút bất ngờ dành cho em... 💌</div>
+  </div>
+</div>
 
-        btnYes.animate([
-          { transform: 'scale(1.18)' },
-          { transform: 'scale(1.35)' },
-          { transform: 'scale(1)' }
-        ], { duration: 420, easing: 'cubic-bezier(.2,.9,.3,1)' });
+<!-- Nội dung thư -->
+<section class="letter-modal" id="letterModal" aria-hidden="true">
+  <article class="letter-card">
+    <h2>💌 Thư dành cho em</h2>
 
-        // Hiện thư mượt
-        letter.classList.add('show');
+    <p>Vy yêu dấu,</p>
 
-        // Sau animation, bật class to-letter và full để CSS xử lý vị trí/ẩn trang trí
-        setTimeout(() => {
-          wrap.classList.add('to-letter');
-          letter.classList.add('full');
-          letter.focus({preventScroll:true});
-        }, 420);
-      });
+    <!-- Ảnh 2.png sẽ xuất hiện trong thư -->
+    <img class="letter-photo" src="2.png" alt="Ảnh trong thư">
 
-      // Đóng thư: trả về trạng thái ban đầu (không tự động hiện lại nút "Không")
-      closeLetter.addEventListener('click', () => {
-        letter.classList.remove('full');
-        wrap.classList.remove('to-letter');
-        // ẩn thư mượt
-        letter.classList.remove('show');
-        btnYes.focus();
-      });
+    <p>Có những ngày anh ngồi một mình và tự hỏi, điều gì ở em lại có sức hút kỳ lạ đến thế để rồi trái tim anh cứ vô điều kiện mà hướng về phía em. Và rồi anh nhận ra, câu trả lời nằm ở chính con người em: một sự kết hợp hoàn hảo giữa nét đẹp rạng ngời và một tâm hồn vô cùng ấm áp.</p>
+    <p>Trước hết, thật khó để không ngước nhìn em mỗi khi em xuất hiện, bởi vì em rất đẹp. Nhưng vẻ bề ngoài ấy chỉ là ấn tượng ban đầu, điều cuốn hút anh lại chính là cách em trò chuyện. Mỗi lời em nói ra đều cực kỳ dễ thương, hòa cùng chất giọng dịu dàng như rót mật vào tai, đủ sức xoa dịu mọi mệt mỏi sau một ngày dài giông bão ngoài kia.
+    Ở cạnh em, anh luôn cảm nhận được một sự bao dung to lớn và một trái tim đầy lòng đồng cảm với mọi người xung quanh. Em không chỉ chăm sóc chu đáo cho bản thân mình mà còn chăm sóc anh tỉ mỉ, cẩn thận từng chút một, khiến anh luôn cảm thấy mình là người may mắn nhất thế giới.
+    <p>Không những thế, em còn rất sắc bén và thông minh. Cách em nhìn nhận vấn đề, phân tích những chi tiết nhỏ nhặt mà người bình thường hay bỏ qua luôn khiến anh phải thán phục. Em nhìn thấu đáo thế giới bằng cả lý trí sáng suốt lẫn một tấm lòng nhân hậu. Ngay cả những lúc em hơi bướng bỉnh hay dễ nổi nóng, anh vẫn luôn hiểu rằng đằng sau lớp vỏ bọc ấy là một bản chất lương thiện vô cùng. Dù đôi khi thế giới ngoài kia có đối xử tệ bạc với em thế nào đi nữa, em vẫn luôn chọn cách đáp lại bằng sự rộng lượng và lòng vị tha đáng quý.</p>
+    <p>Cảm ơn em vì đã xuất hiện trong cuộc đời anh, mang đến cho anh hơi ấm, sự thấu hiểu và một tình yêu chân thành nhất.</p>
+    <p>Anh yêu em, rất nhiều.</p>
 
-      // Lưu nội dung thư thành file text
-      downloadNote.addEventListener('click', () => {
-        const title = 'Thu_danh_cho_em.txt';
-        const content = Array.from(letter.querySelectorAll('p')).map(p => p.innerText).join('\n\n');
-        const blob = new Blob([content], {type: 'text/plain;charset=utf-8'});
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url; a.download = title; document.body.appendChild(a); a.click();
-        a.remove(); URL.revokeObjectURL(url);
-      });
+    <p>Hy vọng em sẽ thích món quà nhỏ này. ❤️</p>
 
-      // Accessibility: đóng bằng Esc
-      document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape' && wrap.classList.contains('to-letter')) {
-          closeLetter.click();
-        }
-      });
-    })();
-  </script>
+    <p>— <em>Bui Quoc Tu</em></p>
+
+    <div class="letter-actions">
+      <button class="close" id="closeLetter">Đóng</button>
+      <button class="save" id="downloadNote">Lưu lại</button>
+    </div>
+  </article>
+</section>
+
+<script>
+(function(){
+  const btnYes=document.getElementById('btnYes');
+  const btnNo=document.getElementById('btnNo');
+  const overlay=document.getElementById('envelopeOverlay');
+  const letterModal=document.getElementById('letterModal');
+  const closeLetter=document.getElementById('closeLetter');
+  const downloadNote=document.getElementById('downloadNote');
+
+  btnNo.addEventListener('click',()=>{
+    btnNo.style.transform='scale(.7)';
+    btnNo.style.opacity='0';
+    setTimeout(()=>{
+      btnNo.style.display='none';
+      btnYes.animate([{transform:'scale(1)'},{transform:'scale(1.12)'},{transform:'scale(1)'}],{duration:350});
+    },260);
+  });
+
+  btnYes.addEventListener('click',()=>{
+    if(overlay.classList.contains('active')) return;
+    document.body.classList.add('modal-open');
+    overlay.classList.add('active');
+    overlay.setAttribute('aria-hidden','false');
+
+    /* 1. Phong bao xuất hiện */
+    setTimeout(()=>{
+      /* 2. Mở nắp phong bao */
+      overlay.classList.add('open');
+    },850);
+
+    /* 3. Đợi lá thư trượt ra rồi chuyển sang nội dung */
+    setTimeout(()=>{
+      overlay.classList.remove('active','open');
+      overlay.setAttribute('aria-hidden','true');
+      letterModal.classList.add('show');
+      letterModal.setAttribute('aria-hidden','false');
+    },2450);
+  });
+
+  function closeAll(){
+    letterModal.classList.remove('show');
+    letterModal.setAttribute('aria-hidden','true');
+    document.body.classList.remove('modal-open');
+    btnYes.focus();
+  }
+
+  closeLetter.addEventListener('click',closeAll);
+
+  document.addEventListener('keydown',e=>{
+    if(e.key==='Escape'){
+      if(letterModal.classList.contains('show')) closeAll();
+    }
+  });
+
+  downloadNote.addEventListener('click',()=>{
+    const content=Array.from(letterModal.querySelectorAll('p')).map(p=>p.innerText).join('\n\n');
+    const blob=new Blob([content],{type:'text/plain;charset=utf-8'});
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement('a');
+    a.href=url;
+    a.download='Thu_danh_cho_em.txt';
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+  });
+})();
+</script>
 </body>
 </html>
