@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Em có yêu anh không?</title>
+  <style>
+    :root{
+      --bg:#fff7f8;
+      --card:#fff;
+      --accent:#ff6b81;
+      --muted:#666;
+    }
+    html,body{height:100%;margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;}
+    body{
+      display:flex;align-items:center;justify-content:center;
+      background:linear-gradient(135deg,#fff7f8 0%, #fff 100%);
+      padding:24px;
+    }
+    .wrap{
+      width:100%;max-width:720px;background:var(--card);border-radius:14px;
+      box-shadow:0 10px 30px rgba(0,0,0,0.08);padding:36px;text-align:center;
+    }
+    h1{margin:0 0 8px;color:var(--accent);font-size:28px}
+    p.lead{margin:0 0 20px;color:var(--muted)}
+    .buttons{display:flex;gap:12px;justify-content:center;margin-top:18px}
+    button{
+      padding:12px 22px;border-radius:10px;border:0;font-weight:600;
+      cursor:pointer;font-size:16px;
+    }
+    .yes{background:var(--accent);color:#fff}
+    .no{background:#f0f0f0;color:#333}
+    /* Thư (ẩn mặc định) */
+    .letter{
+      margin-top:22px;text-align:left;padding:18px;border-radius:10px;
+      background:linear-gradient(180deg,#fff 0,#fffefc 100%);box-shadow:inset 0 1px 0 rgba(0,0,0,0.02);
+      display:none;border:1px solid #f3e6e9;color:#222;
+      max-height:60vh;overflow:auto;
+    }
+    /* Hiệu ứng khi hiện thư */
+    .letter.show{display:block;animation:fadeIn 420ms ease both}
+    @keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+    /* Khi nút "Không" biến mất */
+    .no.hidden{opacity:0;transform:scale(0.9);pointer-events:none;height:0;padding:0;margin:0}
+    footer{margin-top:18px;color:#999;font-size:13px}
+    /* Responsive */
+    @media (max-width:420px){h1{font-size:22px}.wrap{padding:20px}}
+  </style>
+</head>
+<body>
+  <div class="wrap" role="main" aria-labelledby="title">
+    <h1 id="title">Em có yêu anh không?</h1>
+    <p class="lead">Ấn một nút để trả lời nhé</p>
+
+    <div class="buttons" id="btns">
+      <button class="yes" id="btnYes" aria-controls="letter">Có</button>
+      <button class="no" id="btnNo">Không</button>
+    </div>
+
+    <div class="letter" id="letter" aria-live="polite">
+      <!-- Thay nội dung bên dưới bằng thư của bạn -->
+      <h2 style="color:var(--accent);margin-top:0">Thư dành cho em</h2>
+      <p>Em yêu dấu,</p>
+      <p><strong>NỘI DUNG THƯ:</strong> Đây là chỗ để bạn dán nội dung thư thật. Thay toàn bộ đoạn này bằng lời nhắn của bạn.</p>
+      <p>Anh luôn nghĩ về em và mong em hiểu tấm lòng anh.</p>
+      <p style="margin-top:18px">— Anh</p>
+    </div>
+  </div>
+
+  <script>
+    const btnYes = document.getElementById('btnYes');
+    const btnNo = document.getElementById('btnNo');
+    const letter = document.getElementById('letter');
+
+    // Khi ấn "Có" -> hiện thư
+    btnYes.addEventListener('click', () => {
+      letter.classList.add('show');
+      // cuộn tới thư nếu cần
+      letter.scrollIntoView({behavior:'smooth',block:'center'});
+    });
+
+    // Khi ấn "Không" -> nút "Không" biến mất, chỉ còn "Có"
+    btnNo.addEventListener('click', () => {
+      // hiệu ứng ẩn rồi remove khỏi DOM sau animation
+      btnNo.classList.add('hidden');
+      setTimeout(() => {
+        btnNo.remove();
+      }, 300);
+    });
+
+    // Tùy chọn: nếu muốn chỉ cho phép hiện thư 1 lần, có thể disable nút "Có" sau khi ấn
+    // btnYes.addEventListener('click', () => { btnYes.disabled = true; });
+  </script>
+</body>
+</html>
